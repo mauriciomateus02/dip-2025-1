@@ -27,8 +27,16 @@ def compute_histogram_intersection(img1: np.ndarray, img2: np.ndarray) -> float:
 
     ### START CODE HERE ###
     # Step 1: initialize base image with 0.5
-    intersection = 0.0
-    ### END CODE HERE ###
+    # Step 1: Compute histograms with 256 bins, values in [0, 255]
+    hist1, _ = np.histogram(img1, bins=256, range=(0, 256))
+    hist2, _ = np.histogram(img2, bins=256, range=(0, 256))
 
+    # Step 2: Normalize histograms (to make them probability distributions)
+    hist1 = hist1.astype(np.float32) / hist1.sum()
+    hist2 = hist2.astype(np.float32) / hist2.sum()
+
+    # Step 3: Compute intersection
+    intersection = np.sum(np.minimum(hist1, hist2))
+    ### END CODE HERE ###
 
     return float(intersection)

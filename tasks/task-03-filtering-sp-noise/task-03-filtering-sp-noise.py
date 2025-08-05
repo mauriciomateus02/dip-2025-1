@@ -11,8 +11,8 @@ def remove_salt_and_pepper_noise(image: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: Denoised image.
     """
-    # TODO: Implement noise removal here (e.g., median filtering)
-    return image  # Replace this with your filtering implementation
+    denoised_image = cv.medianBlur(image, ksize=3)
+    return denoised_image
 
 if __name__ == "__main__":
     noisy_image = cv.imread("noisy_image.png", cv.IMREAD_GRAYSCALE)
