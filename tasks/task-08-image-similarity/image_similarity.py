@@ -113,8 +113,8 @@ def _mse(i1: np.ndarray, i2: np.ndarray) -> float:
         Mean squared error.
     """
     ### START CODE HERE ###
-    ### TODO
-    mse = None
+    diff = i1 - i2
+    mse = np.mean(diff ** 2)
     ### END CODE HERE ###
 
     return mse
@@ -140,8 +140,10 @@ def _psnr(i1: np.ndarray, i2: np.ndarray, data_range: float = 1.0) -> float:
         PSNR in decibels (dB), or np.inf if images are identical.
     """
     ### START CODE HERE ###
-    ### TODO
-    psnr = None
+    mse = _mse(i1, i2)
+    if mse == 0:
+        return np.inf
+    psnr = 10 * np.log10((data_range ** 2) / mse)
     ### END CODE HERE ###
 
     return psnr
@@ -170,8 +172,15 @@ def _ssim(i1: np.ndarray, i2: np.ndarray, *, C1: float = 1e-8, C2: float = 1e-8)
         SSIM in approximately [-1, 1] (often near [0, 1] for natural images).
     """
     ### START CODE HERE ###
-    ### TODO
-    ssim = None
+    mu1 = i1.mean()
+    mu2 = i2.mean()
+    sigma1_sq = i1.var()
+    sigma2_sq = i2.var()
+    sigma12 = np.mean((i1 - mu1) * (i2 - mu2))
+
+    numerator = (2 * mu1 * mu2 + C1) * (2 * sigma12 + C2)
+    denominator = (mu1 ** 2 + mu2 ** 2 + C1) * (sigma1_sq + sigma2_sq + C2)
+    ssim = numerator / denominator
     ### END CODE HERE ###
 
     return ssim
@@ -199,8 +208,19 @@ def _npcc(i1: np.ndarray, i2: np.ndarray) -> float:
     """
 
     ### START CODE HERE ###
-    ### TODO
-    npcc = None
+    mu1 = i1.mean()
+    mu2 = i2.mean()
+    x = i1 - mu1
+    y = i2 - mu2
+
+    denom = np.sqrt(np.sum(x ** 2) * np.sum(y ** 2))
+    if denom == 0:
+        # Se ambos forem constantes e idênticos → correlação perfeita
+        if np.allclose(i1, i2):
+            return 1.0
+        else:
+            return 0.0
+    npcc = np.sum(x * y) / denom
     ### END CODE HERE ###
 
     return npcc

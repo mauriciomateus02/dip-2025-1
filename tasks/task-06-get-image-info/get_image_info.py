@@ -40,11 +40,11 @@ def get_image_info(image):
     # Handle grayscale vs multi-channel separately
     if depth == 1:
         # Single-channel
-        info["statistics"]["min"] = None
-        info["statistics"]["max"] = None
-        info["statistics"]["mean"] = None
-        info["statistics"]["std_dev"] = None
-        info["statistics"]["median"] = None
+        info["statistics"]["min"] = int(image.min())
+        info["statistics"]["max"] = int(image.max())
+        info["statistics"]["mean"] = float(image.mean())
+        info["statistics"]["std_dev"] = float(image.std())
+        info["statistics"]["median"] = float(np.median(image))
         hist, bins = np.histogram(image, bins=256, range=(0, 256))
         info["statistics"]["histogram"] = hist.tolist()
     else:
@@ -52,11 +52,11 @@ def get_image_info(image):
         channels = cv2.split(image)
         for idx, ch in enumerate(channels):
             ch_stats = {
-                "min": None,
-                "max": None,
-                "mean": None,
-                "std_dev": None,
-                "median": None,
+                 "min": int(ch.min()),
+                "max": int(ch.max()),
+                "mean": float(ch.mean()),
+                "std_dev": float(ch.std()),
+                "median": float(np.median(ch)),
             }
             hist, bins = np.histogram(ch, bins=256, range=(0, 256))
             ch_stats["histogram"] = hist.tolist()
