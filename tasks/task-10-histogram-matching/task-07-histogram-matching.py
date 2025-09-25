@@ -29,5 +29,45 @@ import numpy as np
 import scikitimage as ski
 
 def match_histograms_rgb(source_img: np.ndarray, reference_img: np.ndarray) -> np.ndarray:
-    # Your implementation here
-    pass
+    """
+    Matches the histogram of each RGB channel of the source image to that of the reference image.
+
+    Args:
+        source_img (np.ndarray): Source RGB image (H, W, 3)
+        reference_img (np.ndarray): Reference RGB image (H, W, 3)
+
+    Returns:
+        np.ndarray: Histogram-matched RGB image
+    """
+
+    matched_img = np.zeros_like(source_img)
+
+    # Process each channel separately (R, G, B)
+    for channel in range(3):
+        src = source_img[:, :, channel].ravel()
+        ref = reference_img[:, :, channel].ravel()
+
+        # Compute histograms and CDFs
+        src_hist, bins = np.histogram(src, bins=256, range=(0, 255), density=True)
+        ref_hist, _ = np.histogram(ref, bins=256, range=(0, 255), density=True)
+
+        src_cdf = np.cumsum(src_hist)
+        ref_cdf = np.cumsum(ref_hist)
+
+        src_cdf = src_cdf / src_cdf[-1]
+        ref_cdf = ref_cdf / ref_cdf[-1]
+
+        # Criar mapa de intensidade (lookup table)
+        lut = np.zeros(256, dtype=np.uint8)
+        ref_idx = 0
+        for src_idx in range(256):
+            while ref_idx < 255 and ref_cdf[ref_idx] < src_cdf[src_idx]:
+                ref_idx += 1
+            lut[src_idx] = ref_idx
+
+        # Aplicar LUT
+        matched_channel = lut[source_img[:, :, channel]]
+        matched_img[:, :, channel] = matched_channel
+
+    return matched_img.astype(np.uint8)
+

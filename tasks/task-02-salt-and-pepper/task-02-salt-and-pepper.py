@@ -7,7 +7,17 @@ def create_salt_and_pepper_noise(height=100, width=100, salt_prob=0.05, pepper_p
     equal to salt_prob and pepper_prob. Pixels without noise have values of 0.5.
     """
     ### START CODE HERE ###
-    # TODO
+    # Inicializa a imagem toda com 0.5 (meio-tom cinza)
+    img = np.full((height, width), 0.5, dtype=float)
+
+    # Gera uma matriz aleatória de probabilidades [0,1]
+    random_matrix = np.random.rand(height, width)
+
+    # Pixels que viram sal (1.0)
+    img[random_matrix < salt_prob] = 1.0
+
+    # Pixels que viram pimenta (-1.0)
+    img[(random_matrix >= salt_prob) & (random_matrix < salt_prob + pepper_prob)] = -1.0
     ### END CODE HERE ###
     return img
 
